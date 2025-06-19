@@ -249,6 +249,46 @@ h1, .page {
         padding: 20px;
     }
 }
+
+/* Animation subtile pour le nuage de mots */
+.wordcloud-animated {
+    animation: fadeInSlowly 2s ease-out 1.5s both;
+}
+
+.wordcloud-animated img {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    animation: professionalFloat 6s ease-in-out infinite;
+}
+
+.wordcloud-animated img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    animation-play-state: paused;
+}
+
+@keyframes fadeInSlowly {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes professionalFloat {
+    0%, 100% { 
+        transform: translateY(0px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    50% { 
+        transform: translateY(-8px);
+        box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+    }
+}
 </style>
 </head>
 
@@ -276,13 +316,13 @@ h1, .page {
     🔍 Consulter les offres d'emploi
 </button>
 <button type="button" class="btn btn-primary" onclick="window.location.href='/find'">
-    ⚙️ Recherche avancée
+    ⚙ Recherche avancée
 </button>
 </div>
 
 <br><br><br><br><br><br>
 
-<div class="center">
+<div class="center wordcloud-animated">
     <img src="/wordcloud.png" alt="Word Cloud" width="55%" height="60%">
 </div>
 
