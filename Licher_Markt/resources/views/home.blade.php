@@ -29,12 +29,21 @@ body {
     text-align: center;
     padding: 20px 0;
     margin-bottom: 20px;
-    animation: pulse 2s infinite;
+}
+
+.logo-header a {
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.logo-header a:hover {
+    transform: scale(1.1);
 }
 
 .logo-header img {
     height: 80px;
     width: auto;
+    cursor: pointer;
 }
 
 @keyframes pulse {
@@ -51,14 +60,14 @@ body {
 
 #centb {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 40px;
 }
 
 .btn-primary {
@@ -74,17 +83,61 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    flex: 1;
+    justify-content: center;
+    min-width: 280px;
+}
+
+/* Effet de brillance qui traverse le bouton */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
 }
 
 .btn-primary:nth-child(1) { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
 .btn-primary:nth-child(2) { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
 .btn-primary:nth-child(3) { animation-delay: 0.6s; opacity: 0; animation-fill-mode: forwards; }
 
+/* Effets hover super visible */
 .btn-primary:hover {
-    background-color: #1565c0 !important;
-    border-color: #1565c0 !important;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
+    background-color: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: white !important;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
+    border: 2px solid #ffffff;
+}
+
+/* Effet focus pour l'accessibilité */
+.btn-primary:focus {
+    outline: 3px solid #f59e0b;
+    outline-offset: 2px;
+}
+
+/* Animation d'apparition */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInUp {
@@ -202,8 +255,11 @@ h1, .page {
 <body>
 <div id="space" >
 
+<!-- Logo ajouté ici -->
 <div class="logo-header">
-    <img src="/market_info.png" alt="Market Info">
+    <a href="/" onclick="location.reload()">
+        <img src="/market_info.png" alt="Market Info">
+    </a>
 </div>
 
 <br>
