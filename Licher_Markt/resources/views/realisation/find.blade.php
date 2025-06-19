@@ -115,10 +115,11 @@
         .form-control {
             border: 2px solid #e5e7eb !important;
             border-radius: 10px !important;
-            padding: 12px 15px !important;
+            padding: 15px 18px !important;
             font-size: 14px !important;
             transition: all 0.3s ease !important;
             background: white !important;
+            height: 50px !important;
         }
 
         .form-control:focus {
@@ -127,9 +128,33 @@
             outline: none !important;
         }
 
-        /* Selects */
-        .form-control select option {
-            padding: 10px;
+        /* Selects améliorés - Force le texte foncé */
+        select.form-control {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            -webkit-appearance: menulist !important;
+            -moz-appearance: menulist !important;
+        }
+
+        select.form-control option {
+            color: #000000 !important;
+            background: white !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+        }
+
+        /* Force pour tous les selects */
+        select {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+        }
+
+        select option {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
         }
 
         /* Groupes de dates */
