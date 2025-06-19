@@ -15,7 +15,10 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background-image: url('/TreatInfo.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
             min-height: 100vh;
         }
 
@@ -34,10 +37,20 @@
             margin-bottom: 15px;
         }
 
+        .logo-container a {
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .logo-container a:hover {
+            transform: scale(1.1);
+        }
+
         .logo-container img {
             height: 60px;
             width: auto;
             filter: brightness(0) invert(1);
+            cursor: pointer;
         }
 
         .page-title {
@@ -295,7 +308,9 @@
     <div class="header">
         <div class="container">
             <div class="logo-container">
-                <img src="/market_info.png" alt="Licher Markt">
+                <a href="/" onclick="location.reload()">
+                    <img src="/market_info.png" alt="Licher Markt">
+                </a>
             </div>
             <h1 class="page-title">Secteurs d'activité</h1>
             <p class="subtitle">Explorez les organismes recruteurs au Bénin</p>
