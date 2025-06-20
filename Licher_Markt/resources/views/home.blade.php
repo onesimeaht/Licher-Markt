@@ -459,4 +459,9 @@ function getSmartResponse(message) {
     // Réponse par défaut plus intelligente
     return "🤔 Je n'ai pas bien compris votre question. Je peux vous renseigner sur :<br><br>• <strong>Procédures</strong> de candidature<br>• <strong>Délais</strong> de concours<br>• <strong>Grilles salariales</strong><br>• <strong>Critères</strong> d'éligibilité<br>• <strong>Concours</strong> et épreuves<br><br>💡 <em>Essayez de reformuler votre question !</em>";
 }
+document.getElementById('home-chat-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendHomeMessage();
+    }
+});
 </script>
