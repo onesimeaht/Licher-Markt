@@ -1,0 +1,4 @@
+* Recommandations personnalisées : Suggérer des offres d'emploi basées sur le profil, l'expérience et les préférences du candidat
+* Assistant CV : Aider à optimiser le CV selon les postes visés et les standards béninois
+* Chatbot de guidance : Répondre aux questions sur les procédures de candidature, les ministères, les délais, etc.
+* Matching intelligent : Analyser les compétences du candidat vs les exigences des postes pour calculer un pourcentage de compatibilité

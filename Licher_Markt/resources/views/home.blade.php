@@ -328,3 +328,135 @@ h1, .page {
 
 </body>
 </html>
+
+<!-- BOUTON IA URGENT - À ajouter à la fin de home.blade.php -->
+<button id="home-ai-btn" style="
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    width: 80px !important;
+    height: 80px !important;
+    background: #1e40af !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    font-size: 35px !important;
+    cursor: pointer !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    🤖
+</button>
+
+<div id="home-ai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #1e40af; color: white; padding: 15px; border-radius: 10px; margin: -30px -30px 20px -30px;">
+            <h2 style="margin: 0; font-size: 24px;">🤖 Assistant IA Licher_Markt</h2>
+            <button id="home-close-btn" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer;">×</button>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h3>Votre Assistant IA pour l'Emploi au Bénin</h3>
+            <p style="color: #666;">Posez vos questions sur les concours et procédures !</p>
+        </div>
+        
+        <div id="home-chat-box" style="height: 250px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: #f9fafb;">
+            <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                <strong style="color: #1e40af;">Assistant :</strong> Bonjour ! Comment puis-je vous aider avec votre recherche d'emploi au Bénin ?
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="home-chat-input" placeholder="Tapez votre question..." style="flex: 1; padding: 12px; border: 2px solid #d1d5db; border-radius: 8px;">
+            <button onclick="sendHomeMessage()" style="padding: 12px 20px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer;">Envoyer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('home-ai-btn').onclick = function() {
+    document.getElementById('home-ai-modal').style.display = 'block';
+};
+
+document.getElementById('home-close-btn').onclick = function() {
+    document.getElementById('home-ai-modal').style.display = 'none';
+};
+
+function sendHomeMessage() {
+    const input = document.getElementById('home-chat-input');
+    const chatBox = document.getElementById('home-chat-box');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    chatBox.innerHTML += `<div style="background: #dbeafe; padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: right;"><strong>Vous :</strong> ${message}</div>`;
+    
+    setTimeout(() => {
+        const response = getSmartResponse(message);
+        chatBox.innerHTML += `<div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><strong style="color: #1e40af;">Assistant :</strong> ${response}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1000);
+    
+    input.value = '';
+}
+
+function getSmartResponse(message) {
+    const lower = message.toLowerCase();
+    
+    // Salutations
+    if (lower.includes('bonjour') || lower.includes('salut') || lower.includes('hello')) {
+        return "👋 Bonjour ! Je suis votre assistant IA spécialisé dans l'emploi public au Bénin. Comment puis-je vous aider aujourd'hui ?";
+    }
+    
+    // Qui es-tu / Présentation
+    if (lower.includes('qui es') || lower.includes('qui êtes') || lower.includes('présente')) {
+        return "🤖 Je suis l'Assistant IA de Licher_Markt ! Je vous aide à naviguer dans le monde de l'emploi public béninois. Je connais les procédures, délais, salaires et critères des concours.";
+    }
+    
+    // Comment postuler / Procédures
+    if (lower.includes('comment postuler') || lower.includes('procédure') || lower.includes('candidature') || lower.includes('postuler')) {
+        return "📋 <strong>Procédures de candidature :</strong><br>1️⃣ Vérifiez les critères d'éligibilité<br>2️⃣ Préparez vos documents (CV, diplômes, certificats)<br>3️⃣ Déposez votre dossier avant la date limite<br>4️⃣ Passez les épreuves écrites puis orales<br>5️⃣ Attendez les résultats<br><br>💡 <em>Conseil : Postulez dès les premiers jours !</em>";
+    }
+    
+    // Délais
+    if (lower.includes('délai') || lower.includes('temps') || lower.includes('combien de jours')) {
+        return "🕒 <strong>Délais de candidature :</strong><br>• <strong>Ministères :</strong> 15-30 jours après publication<br>• <strong>Office du Baccalauréat :</strong> 21 jours<br>• <strong>Autres organismes :</strong> 14-45 jours<br><br>⚡ <em>Recommandation : Postulez dans les 7 premiers jours pour maximiser vos chances !</em>";
+    }
+    
+    // Salaires
+    if (lower.includes('salaire') || lower.includes('grille') || lower.includes('combien') || lower.includes('rémunération') || lower.includes('paye')) {
+        return "💰 <strong>Grilles salariales secteur public béninois :</strong><br>• <strong>Catégorie A :</strong> 80,000 - 300,000 FCFA<br>• <strong>Catégorie B :</strong> 60,000 - 150,000 FCFA<br>• <strong>Catégorie C :</strong> 45,000 - 100,000 FCFA<br><br>📈 <em>Note : Les montants varient selon l'expérience et les primes.</em>";
+    }
+    
+    // Critères / Conditions
+    if (lower.includes('critère') || lower.includes('condition') || lower.includes('exigence') || lower.includes('requis')) {
+        return "📋 <strong>Critères généraux :</strong><br>• Nationalité béninoise<br>• Âge : généralement 18-35 ans<br>• Diplôme requis selon le poste<br>• Casier judiciaire vierge<br>• Aptitude physique<br><br>🎯 <em>Chaque concours a ses critères spécifiques !</em>";
+    }
+    
+    // Concours
+    if (lower.includes('concours') || lower.includes('épreuve') || lower.includes('examen')) {
+        return "📚 <strong>Déroulement des concours :</strong><br>• <strong>Épreuves écrites :</strong> Culture générale, français, matières spécialisées<br>• <strong>Épreuves orales :</strong> Entretien, présentation<br>• <strong>Durée :</strong> 2-6 mois selon l'organisme<br><br>💪 <em>Préparez-vous bien à l'avance !</em>";
+    }
+    
+    // Aide / Assistance
+    if (lower.includes('aide') || lower.includes('aidez') || lower.includes('aider') || lower.includes('assistance')) {
+        return "🆘 <strong>Je peux vous aider avec :</strong><br>• Les procédures de candidature<br>• Les délais et dates limites<br>• Les grilles salariales<br>• Les critères d'éligibilité<br>• Le déroulement des concours<br>• Les conseils de préparation<br><br>❓ <em>Posez-moi une question spécifique !</em>";
+    }
+    
+    // Merci
+    if (lower.includes('merci') || lower.includes('remercie')) {
+        return "😊 De rien ! C'est un plaisir de vous aider. N'hésitez pas si vous avez d'autres questions sur l'emploi public au Bénin !";
+    }
+    
+    // Au revoir
+    if (lower.includes('au revoir') || lower.includes('bye') || lower.includes('à bientôt')) {
+        return "👋 Au revoir ! Bonne chance dans vos démarches professionnelles. Revenez quand vous voulez !";
+    }
+    
+    // Réponse par défaut plus intelligente
+    return "🤔 Je n'ai pas bien compris votre question. Je peux vous renseigner sur :<br><br>• <strong>Procédures</strong> de candidature<br>• <strong>Délais</strong> de concours<br>• <strong>Grilles salariales</strong><br>• <strong>Critères</strong> d'éligibilité<br>• <strong>Concours</strong> et épreuves<br><br>💡 <em>Essayez de reformuler votre question !</em>";
+}
+</script>
