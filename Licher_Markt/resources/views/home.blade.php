@@ -329,8 +329,8 @@ h1, .page {
 </body>
 </html>
 
-<!-- BOUTON IA URGENT - À ajouter à la fin de home.blade.php -->
-<button id="home-ai-btn" style="
+<!-- BOUTON IA FLOTTANT -->
+<button onclick="openAI()" style="
     position: fixed !important;
     bottom: 30px !important;
     right: 30px !important;
@@ -342,49 +342,883 @@ h1, .page {
     border-radius: 50% !important;
     font-size: 35px !important;
     cursor: pointer !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
-    z-index: 999999 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    z-index: 9999999 !important;
+" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#1e40af'">
     🤖
 </button>
 
-<div id="home-ai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000000;">
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 600px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #1e40af; color: white; padding: 15px; border-radius: 10px; margin: -30px -30px 20px -30px;">
-            <h2 style="margin: 0; font-size: 24px;">🤖 Assistant IA Licher_Markt</h2>
-            <button id="home-close-btn" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer;">×</button>
-        </div>
-        
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h3>Votre Assistant IA pour l'Emploi au Bénin</h3>
-            <p style="color: #666;">Posez vos questions sur les concours et procédures !</p>
-        </div>
-        
-        <div id="home-chat-box" style="height: 250px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: #f9fafb;">
-            <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
-                <strong style="color: #1e40af;">Assistant :</strong> Bonjour ! Comment puis-je vous aider avec votre recherche d'emploi au Bénin ?
+<script>
+function openAI() {
+    // Créer le modal s'il n'existe pas
+    if (!document.getElementById('ai-modal-simple')) {
+        createAIModal();
+    }
+    
+    // Afficher le modal
+    document.getElementById('ai-modal-simple').style.display = 'block';
+}
+
+function createAIModal() {
+    const modal = document.createElement('div');
+    modal.id = 'ai-modal-simple';
+    modal.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000000;
+    `;
+    
+    modal.innerHTML = `
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 20px; width: 95%; max-width: 900px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+            
+            <!-- HEADER -->
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #1e40af; color: white; padding: 20px; border-radius: 20px 20px 0 0;">
+                <h2 style="margin: 0; font-size: 24px;">🤖 Assistant IA Licher_Markt</h2>
+                <button onclick="closeAI()" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer; width: 40px; height: 40px;">×</button>
+            </div>
+
+            <!-- NAVIGATION ONGLETS -->
+            <div style="display: flex; background: #f8fafc; border-bottom: 2px solid #e2e8f0; padding: 0 20px;">
+                <button onclick="switchTab('chat')" id="tab-btn-chat" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #1e40af; border-bottom: 3px solid #1e40af;">
+                    💬 Chat
+                </button>
+                <button onclick="switchTab('profile')" id="tab-btn-profile" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent;">
+                    👤 Mon Profil
+                </button>
+                <button onclick="switchTab('recommendations')" id="tab-btn-recommendations" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent;">
+                    🎯 Recommandations
+                </button>
+                <button onclick="switchTab('cv')" id="tab-btn-cv" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent;">
+                    📄 Assistant CV
+                </button>
+            </div>
+
+            <!-- CONTENU DES ONGLETS -->
+            <div style="flex: 1; overflow-y: auto; padding: 20px;">
+                
+                <!-- ONGLET CHAT -->
+                <div id="tab-content-chat">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0 0 10px 0;">Votre Assistant IA pour l'Emploi au Bénin</h3>
+                        <p style="color: #666; margin: 0;">Posez vos questions sur les concours et procédures !</p>
+                    </div>
+                    
+                    <div id="chat-box-simple" style="height: 300px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: #f9fafb;">
+                        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <strong style="color: #1e40af;">Assistant :</strong> Bonjour ! Comment puis-je vous aider avec votre recherche d'emploi au Bénin ?
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="chat-input-simple" placeholder="Tapez votre question..." style="flex: 1; padding: 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 16px;">
+                        <button onclick="sendMessage()" style="padding: 12px 20px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Envoyer</button>
+                    </div>
+                </div>
+
+                <!-- ONGLET PROFIL -->
+                <div id="tab-content-profile" style="display: none;">
+                    <h3 style="margin: 0 0 20px 0; text-align: center;">👤 Complétez votre profil candidat</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nom complet</label>
+                            <input type="text" id="profile-name" placeholder="Votre nom complet" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Années d'expérience</label>
+                            <select id="profile-experience" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                                <option value="">Sélectionnez...</option>
+                                <option value="0-1">0-1 an</option>
+                                <option value="2-5">2-5 ans</option>
+                                <option value="5-10">5-10 ans</option>
+                                <option value="10+">Plus de 10 ans</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Localisation</label>
+                            <select id="profile-location" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                                <option value="Cotonou">Cotonou</option>
+                                <option value="Porto-Novo">Porto-Novo</option>
+                                <option value="Parakou">Parakou</option>
+                                <option value="Abomey-Calavi">Abomey-Calavi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Niveau d'éducation</label>
+                            <select id="profile-education" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                                <option value="">Sélectionnez...</option>
+                                <option value="Bac">Baccalauréat</option>
+                                <option value="Licence">Licence</option>
+                                <option value="Master">Master</option>
+                                <option value="Doctorat">Doctorat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Compétences</label>
+                        <div id="skills-display" style="margin-bottom: 10px; min-height: 40px; display: flex; flex-wrap: gap: 8px;"></div>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="skill-input" placeholder="Ex: Communication, Excel..." style="flex: 1; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                            <button onclick="addSkill()" style="padding: 10px 15px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">Ajouter</button>
+                        </div>
+                    </div>
+
+                    <button onclick="saveProfile()" style="width: 100%; padding: 15px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        💾 Sauvegarder mon profil
+                    </button>
+                </div>
+
+                <!-- ONGLET RECOMMANDATIONS -->
+                <div id="tab-content-recommendations" style="display: none;">
+                    <h3 style="margin: 0 0 20px 0; text-align: center;">🎯 Recommandations personnalisées</h3>
+                    
+                    <div id="recommendations-content">
+                        <div style="text-align: center; padding: 40px 20px; color: #666;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+                            <h4 style="margin: 0 0 10px 0;">Aucune recommandation pour le moment</h4>
+                            <p style="margin: 0 0 20px 0;">Complétez votre profil pour recevoir des suggestions d'emploi !</p>
+                            <button onclick="switchTab('profile')" style="padding: 12px 24px; background: #1e40af; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                👤 Compléter mon profil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ONGLET ASSISTANT CV -->
+                <div id="tab-content-cv" style="display: none;">
+                    <h3 style="margin: 0 0 20px 0; text-align: center;">📄 Assistant CV - Secteur Public Bénin</h3>
+                    
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <p style="color: #666; margin-bottom: 20px;">Obtenez une analyse de votre CV avec des conseils spécifiques au marché béninois</p>
+                        <button onclick="analyzeCv()" style="padding: 15px 30px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                            🔍 Analyser mon CV
+                        </button>
+                    </div>
+
+                    <div id="cv-analysis-result" style="display: none;">
+                        <!-- Les résultats apparaîtront ici -->
+                    </div>
+                </div>
+
             </div>
         </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeAI() {
+    document.getElementById('ai-modal-simple').style.display = 'none';
+}
+
+function sendMessage() {
+    const input = document.getElementById('chat-input-simple');
+    const chatBox = document.getElementById('chat-box-simple');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    chatBox.innerHTML += `<div style="background: #dbeafe; padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: right;"><strong>Vous :</strong> ${message}</div>`;
+    
+    setTimeout(() => {
+        let response = "Je peux vous aider avec les procédures de candidature au Bénin !";
+        if (message.toLowerCase().includes('délai')) {
+            response = "Les délais varient : Ministères (15-30 jours), OB (21 jours). Postulez vite !";
+        } else if (message.toLowerCase().includes('salaire')) {
+            response = "Grilles salariales : Cat A (80k-300k), Cat B (60k-150k), Cat C (45k-100k) FCFA.";
+        }
         
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="home-chat-input" placeholder="Tapez votre question..." style="flex: 1; padding: 12px; border: 2px solid #d1d5db; border-radius: 8px;">
-            <button onclick="sendHomeMessage()" style="padding: 12px 20px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer;">Envoyer</button>
+        chatBox.innerHTML += `<div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><strong style="color: #1e40af;">Assistant :</strong> ${response}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1000);
+    
+    input.value = '';
+}
+// Variables globales
+let userProfile = {
+    name: '',
+    experience: '',
+    location: 'Cotonou',
+    education: '',
+    skills: []
+};
+
+// Navigation onglets
+function switchTab(tabName) {
+    // Cacher tous les contenus
+    document.querySelectorAll('[id^="tab-content-"]').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Réinitialiser les styles des boutons
+    document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
+        btn.style.color = '#64748b';
+        btn.style.borderBottomColor = 'transparent';
+    });
+    
+    // Afficher le contenu sélectionné
+    document.getElementById('tab-content-' + tabName).style.display = 'block';
+    
+    // Activer le bouton
+    const activeBtn = document.getElementById('tab-btn-' + tabName);
+    activeBtn.style.color = '#1e40af';
+    activeBtn.style.borderBottomColor = '#1e40af';
+}
+
+// Gestion des compétences
+function addSkill() {
+    const input = document.getElementById('skill-input');
+    if (!input) return;
+    
+    const skill = input.value.trim();
+    
+    if (skill && !userProfile.skills.includes(skill)) {
+        userProfile.skills.push(skill);
+        input.value = '';
+        updateSkillsDisplay();
+        
+        // Générer automatiquement les recommandations
+        if (userProfile.skills.length > 0) {
+            generateRecommendations();
+        }
+    }
+}
+
+function updateSkillsDisplay() {
+    const container = document.getElementById('skills-display');
+    if (!container) return;
+    
+    container.innerHTML = userProfile.skills.map(skill => 
+        `<span style="background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+            ${skill}
+            <button onclick="removeSkill('${skill}')" style="background: none; border: none; color: #1e40af; cursor: pointer; font-weight: bold;">×</button>
+        </span>`
+    ).join('');
+}
+
+function removeSkill(skill) {
+    userProfile.skills = userProfile.skills.filter(s => s !== skill);
+    updateSkillsDisplay();
+}
+
+function saveProfile() {
+    const nameInput = document.getElementById('profile-name');
+    const expInput = document.getElementById('profile-experience');
+    const locInput = document.getElementById('profile-location');
+    const eduInput = document.getElementById('profile-education');
+    
+    if (!nameInput) return;
+    
+    userProfile.name = nameInput.value;
+    userProfile.experience = expInput.value;
+    userProfile.location = locInput.value;
+    userProfile.education = eduInput.value;
+    
+    localStorage.setItem('licher_profile', JSON.stringify(userProfile));
+    
+    alert('✅ Profil sauvegardé avec succès !');
+    
+    // Générer les recommandations automatiquement
+    generateRecommendations();
+    
+    // Aller sur l'onglet recommandations
+    setTimeout(() => {
+        switchTab('recommendations');
+    }, 1000);
+}
+
+function generateRecommendations() {
+    if (userProfile.skills.length === 0) return;
+    
+    const jobs = [
+        {
+            title: "Chargé de Communication",
+            organization: "Ministère de la Santé",
+            location: "Cotonou",
+            requirements: ["Communication", "Marketing", "Rédaction"],
+            salary: "120,000 - 200,000 FCFA"
+        },
+        {
+            title: "Analyste Financier", 
+            organization: "Ministère des Finances",
+            location: "Porto-Novo",
+            requirements: ["Finance", "Excel", "Comptabilité"],
+            salary: "150,000 - 250,000 FCFA"
+        }
+    ];
+    
+    const html = jobs.map(job => `
+        <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 5px 0;">${job.title}</h4>
+            <p style="color: #1e40af; margin: 0;">${job.organization}</p>
+            <p style="color: #666; margin: 10px 0;">💰 ${job.salary}</p>
+            <div style="margin: 10px 0;">
+                ${job.requirements.map(req => `<span style="background: #f1f5f9; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-right: 5px;">${req}</span>`).join('')}
+            </div>
+            <button style="width: 100%; padding: 10px; background: #1e40af; color: white; border: none; border-radius: 6px; cursor: pointer;">Postuler</button>
+        </div>
+    `).join('');
+    
+    document.getElementById('recommendations-content').innerHTML = html;
+}
+
+function analyzeCv() {
+    // Créer un input file temporaire
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.pdf,.doc,.docx';
+    fileInput.style.display = 'none';
+    
+    fileInput.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            showCvAnalysis(file.name);
+        }
+    };
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+}
+
+function showCvAnalysis(fileName) {
+    const score = Math.floor(Math.random() * 20) + 75;
+    
+    const html = `
+        <div style="background: #1e40af; color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0;">📄 Analyse de : ${fileName}</h4>
+            <div style="font-size: 36px; font-weight: bold;">${score}/100</div>
+        </div>
+        
+        <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <h5 style="margin: 0 0 15px 0; color: #166534;">✅ Points Forts</h5>
+            <ul style="color: #166534;">
+                <li>Structure claire</li>
+                <li>Expérience pertinente</li>
+                <li>Compétences bien présentées</li>
+            </ul>
+        </div>
+        
+        <button onclick="analyzeCv()" style="padding: 12px 24px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            🔄 Analyser un autre CV
+        </button>
+    `;
+    
+    document.getElementById('cv-analysis-result').innerHTML = html;
+    document.getElementById('cv-analysis-result').style.display = 'block';
+}
+// Support de la touche Entrée pour les compétences
+document.addEventListener('keydown', function(e) {
+    if (e.target.id === 'skill-input' && e.key === 'Enter') {
+        addSkill();
+    }
+});
+
+function applyJob(jobTitle) {
+    alert(`🎉 Candidature envoyée pour : ${jobTitle}`);
+}
+</script>
+
+<!-- MODAL IA COMPLET -->
+<div id="home-ai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 20px; width: 95%; max-width: 900px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+        
+        <!-- HEADER -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #1e40af; color: white; padding: 20px; border-radius: 20px 20px 0 0;">
+            <h2 style="margin: 0; font-size: 24px;">🤖 Assistant IA Licher_Markt</h2>
+            <button id="home-close-btn" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer; width: 40px; height: 40px;">×</button>
+        </div>
+
+        <!-- NAVIGATION ONGLETS -->
+        <div style="display: flex; background: #f8fafc; border-bottom: 2px solid #e2e8f0; padding: 0 20px;">
+            <button class="ai-tab-btn" data-tab="chat" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #1e40af; border-bottom: 3px solid #1e40af;">
+                💬 Chat
+            </button>
+            <button class="ai-tab-btn" data-tab="profile" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent;">
+                👤 Mon Profil
+            </button>
+            <button class="ai-tab-btn" data-tab="recommendations" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent;">
+                🎯 Recommandations
+            </button>
+            <button class="ai-tab-btn" data-tab="cv" style="padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent;">
+                📄 Assistant CV
+            </button>
+        </div>
+
+        <!-- CONTENU DES ONGLETS -->
+        <div style="flex: 1; overflow-y: auto; padding: 20px;">
+            
+            <!-- ONGLET CHAT -->
+            <div id="tab-chat" class="ai-tab-content">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 10px 0;">Votre Assistant IA pour l'Emploi au Bénin</h3>
+                    <p style="color: #666; margin: 0;">Posez vos questions sur les concours et procédures !</p>
+                </div>
+                
+                <div id="home-chat-box" style="height: 300px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: #f9fafb;">
+                    <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <strong style="color: #1e40af;">Assistant :</strong> Bonjour ! Comment puis-je vous aider avec votre recherche d'emploi au Bénin ?
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="home-chat-input" placeholder="Tapez votre question..." style="flex: 1; padding: 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 16px;">
+                    <button onclick="sendHomeMessage()" style="padding: 12px 20px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Envoyer</button>
+                </div>
+            </div>
+
+            <!-- ONGLET PROFIL -->
+            <div id="tab-profile" class="ai-tab-content" style="display: none;">
+                <h3 style="margin: 0 0 20px 0; text-align: center;">👤 Complétez votre profil candidat</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nom complet</label>
+                        <input type="text" id="profile-name" placeholder="Votre nom complet" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Années d'expérience</label>
+                        <select id="profile-experience" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                            <option value="">Sélectionnez...</option>
+                            <option value="0-1">0-1 an</option>
+                            <option value="2-5">2-5 ans</option>
+                            <option value="5-10">5-10 ans</option>
+                            <option value="10+">Plus de 10 ans</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Localisation</label>
+                        <select id="profile-location" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                            <option value="Cotonou">Cotonou</option>
+                            <option value="Porto-Novo">Porto-Novo</option>
+                            <option value="Parakou">Parakou</option>
+                            <option value="Abomey-Calavi">Abomey-Calavi</option>
+                            <option value="Bohicon">Bohicon</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Niveau d'éducation</label>
+                        <select id="profile-education" style="width: 100%; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                            <option value="">Sélectionnez...</option>
+                            <option value="Bac">Baccalauréat</option>
+                            <option value="Licence">Licence</option>
+                            <option value="Master">Master</option>
+                            <option value="Doctorat">Doctorat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Compétences</label>
+                    <div id="skills-display" style="margin-bottom: 10px; min-height: 40px; display: flex; flex-wrap: gap: 8px;"></div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="skill-input" placeholder="Ajouter une compétence (ex: Communication, Excel...)" style="flex: 1; padding: 10px; border: 2px solid #d1d5db; border-radius: 6px;">
+                        <button onclick="addSkill()" style="padding: 10px 15px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">Ajouter</button>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                        💡 Suggestions : Communication, Marketing, Excel, Finance, JavaScript, Comptabilité, Management, Informatique
+                    </div>
+                </div>
+
+                <button onclick="saveProfile()" style="width: 100%; padding: 15px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                    💾 Sauvegarder mon profil
+                </button>
+            </div>
+
+            <!-- ONGLET RECOMMANDATIONS -->
+            <div id="tab-recommendations" class="ai-tab-content" style="display: none;">
+                <h3 style="margin: 0 0 20px 0; text-align: center;">🎯 Recommandations personnalisées</h3>
+                
+                <div id="recommendations-content">
+                    <div style="text-center; padding: 40px 20px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+                        <h4 style="margin: 0 0 10px 0;">Aucune recommandation pour le moment</h4>
+                        <p style="margin: 0 0 20px 0;">Complétez votre profil pour recevoir des suggestions d'emploi personnalisées !</p>
+                        <button onclick="switchTab('profile')" style="padding: 12px 24px; background: #1e40af; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            👤 Compléter mon profil
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ONGLET ASSISTANT CV -->
+            <div id="tab-cv" class="ai-tab-content" style="display: none;">
+                <h3 style="margin: 0 0 20px 0; text-align: center;">📄 Assistant CV - Secteur Public Bénin</h3>
+                
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <p style="color: #666; margin-bottom: 20px;">Obtenez une analyse de votre CV avec des conseils spécifiques au marché béninois</p>
+                    <button onclick="analyzeCv()" style="padding: 15px 30px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        🔍 Analyser mon CV
+                    </button>
+                </div>
+
+                <div id="cv-analysis-result" style="display: none;">
+                    <!-- Les résultats apparaîtront ici -->
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script>
+
+// CODE DE TEST - Ajouter à la fin du script
+console.log("Script IA chargé !");
+
+function testAddSkill() {
+    console.log("Test addSkill appelé");
+    const input = document.getElementById('skill-input');
+    console.log("Input trouvé:", input);
+    
+    if (input) {
+        const skill = input.value.trim();
+        console.log("Compétence à ajouter:", skill);
+        
+        if (skill) {
+            alert("Test réussi ! Compétence: " + skill);
+        } else {
+            alert("Aucune compétence saisie");
+        }
+    } else {
+        alert("Input skill-input non trouvé !");
+    }
+}
+
+function testSaveProfile() {
+    console.log("Test saveProfile appelé");
+    alert("Test sauvegarde - fonction appelée !");
+}
+
+function testAnalyzeCv() {
+    console.log("Test analyzeCv appelé");
+    alert("Test analyse CV - fonction appelée !");
+}
+
+// Variables globales
+let userProfile = {
+    name: '',
+    experience: '',
+    location: 'Cotonou',
+    education: '',
+    skills: []
+};
+
+// Ouvrir/Fermer modal
 document.getElementById('home-ai-btn').onclick = function() {
     document.getElementById('home-ai-modal').style.display = 'block';
+    loadProfile();
 };
 
 document.getElementById('home-close-btn').onclick = function() {
     document.getElementById('home-ai-modal').style.display = 'none';
 };
 
+// Navigation onglets
+document.querySelectorAll('.ai-tab-btn').forEach(btn => {
+    btn.onclick = function() {
+        switchTab(this.dataset.tab);
+    };
+});
+
+function switchTab(tabName) {
+    // Cacher tous les contenus
+    document.querySelectorAll('.ai-tab-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Réinitialiser les styles des boutons
+    document.querySelectorAll('.ai-tab-btn').forEach(btn => {
+        btn.style.color = '#64748b';
+        btn.style.borderBottomColor = 'transparent';
+    });
+    
+    // Afficher le contenu sélectionné
+    document.getElementById('tab-' + tabName).style.display = 'block';
+    
+    // Activer le bouton
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    activeBtn.style.color = '#1e40af';
+    activeBtn.style.borderBottomColor = '#1e40af';
+}
+
+// GESTION DU PROFIL
+function addSkill() {
+    const input = document.getElementById('skill-input');
+    const skill = input.value.trim();
+    
+    if (skill && !userProfile.skills.includes(skill)) {
+        userProfile.skills.push(skill);
+        input.value = '';
+        updateSkillsDisplay();
+    }
+}
+
+function removeSkill(skill) {
+    userProfile.skills = userProfile.skills.filter(s => s !== skill);
+    updateSkillsDisplay();
+}
+
+function updateSkillsDisplay() {
+    const container = document.getElementById('skills-display');
+    container.innerHTML = userProfile.skills.map(skill => 
+        `<span style="background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+            ${skill}
+            <button onclick="removeSkill('${skill}')" style="background: none; border: none; color: #1e40af; cursor: pointer; font-weight: bold;">×</button>
+        </span>`
+    ).join('');
+}
+
+function saveProfile() {
+    userProfile.name = document.getElementById('profile-name').value;
+    userProfile.experience = document.getElementById('profile-experience').value;
+    userProfile.location = document.getElementById('profile-location').value;
+    userProfile.education = document.getElementById('profile-education').value;
+    
+    // Sauvegarder dans le navigateur
+    localStorage.setItem('licher_profile', JSON.stringify(userProfile));
+    
+    showNotification('✅ Profil sauvegardé avec succès !', 'success');
+    generateRecommendations();
+}
+
+function loadProfile() {
+    const saved = localStorage.getItem('licher_profile');
+    if (saved) {
+        userProfile = JSON.parse(saved);
+        
+        document.getElementById('profile-name').value = userProfile.name || '';
+        document.getElementById('profile-experience').value = userProfile.experience || '';
+        document.getElementById('profile-location').value = userProfile.location || 'Cotonou';
+        document.getElementById('profile-education').value = userProfile.education || '';
+        
+        updateSkillsDisplay();
+        
+        if (userProfile.skills.length > 0) {
+            generateRecommendations();
+        }
+    }
+}
+
+// RECOMMANDATIONS
+function generateRecommendations() {
+    if (userProfile.skills.length === 0) return;
+    
+    const jobs = [
+        {
+            title: "Chargé de Communication",
+            organization: "Ministère de la Santé (MS)",
+            location: "Cotonou",
+            contract: "CDI",
+            requirements: ["Communication", "Marketing", "Rédaction", "Réseaux sociaux"],
+            description: "Poste de chargé de communication pour les campagnes de santé publique",
+            deadline: "2024-07-15",
+            salary: "120,000 - 200,000 FCFA"
+        },
+        {
+            title: "Analyste Financier",
+            organization: "Ministère de l'Économie et des Finances (MEF)",
+            location: "Porto-Novo",
+            contract: "CDD",
+            requirements: ["Finance", "Comptabilité", "Excel", "Analyse de données"],
+            description: "Analyse des budgets et reporting financier",
+            deadline: "2024-07-20",
+            salary: "150,000 - 250,000 FCFA"
+        },
+        {
+            title: "Développeur Web",
+            organization: "Office du Baccalauréat (OB)",
+            location: "Cotonou",
+            contract: "CDI",
+            requirements: ["JavaScript", "React", "Node.js", "Base de données"],
+            description: "Développement de la plateforme numérique du baccalauréat",
+            deadline: "2024-07-25",
+            salary: "180,000 - 300,000 FCFA"
+        },
+        {
+            title: "Assistant de Direction",
+            organization: "Ministère de l'Intérieur",
+            location: userProfile.location,
+            contract: "CDI",
+            requirements: ["Management", "Communication", "Bureautique", "Organisation"],
+            description: "Support administratif et coordination des activités",
+            deadline: "2024-07-30",
+            salary: "100,000 - 180,000 FCFA"
+        }
+    ];
+    
+    const recommendations = jobs.map(job => {
+        const compatibility = calculateCompatibility(job.requirements);
+        return { ...job, compatibility };
+    }).sort((a, b) => b.compatibility - a.compatibility);
+    
+    const html = `
+        <div style="margin-bottom: 20px; text-align: center;">
+            <h4 style="color: #1e40af; margin: 0;">📊 ${recommendations.length} offres analysées pour vous</h4>
+        </div>
+        ${recommendations.map(job => `
+            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px; ${job.compatibility >= 70 ? 'border-color: #10b981; background: #f0fdf4;' : job.compatibility >= 50 ? 'border-color: #f59e0b; background: #fffbeb;' : 'background: #f9fafb;'}">
+                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 5px 0; color: #1f2937; font-size: 18px;">${job.title}</h4>
+                        <p style="margin: 0; color: #1e40af; font-weight: 600;">${job.organization}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="background: ${job.compatibility >= 70 ? '#10b981' : job.compatibility >= 50 ? '#f59e0b' : '#6b7280'}; color: white; padding: 8px 16px; border-radius: 20px; font-weight: 600; margin-bottom: 5px;">
+                            ${job.compatibility}% compatible
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 20px; margin-bottom: 15px; font-size: 14px; color: #6b7280;">
+                    <span>📍 ${job.location}</span>
+                    <span>💼 ${job.contract}</span>
+                    <span>💰 ${job.salary}</span>
+                    <span>📅 Expire le ${job.deadline}</span>
+                </div>
+                
+                <p style="margin: 0 0 15px 0; color: #4b5563;">${job.description}</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #374151;">Compétences requises :</strong><br>
+                    <div style="display: flex; flex-wrap: gap: 6px; margin-top: 8px;">
+                        ${job.requirements.map(req => {
+                            const isMatch = userProfile.skills.some(skill => 
+                                skill.toLowerCase().includes(req.toLowerCase()) || 
+                                req.toLowerCase().includes(skill.toLowerCase())
+                            );
+                            return `<span style="padding: 4px 8px; border-radius: 12px; font-size: 12px; ${isMatch ? 'background: #dcfce7; color: #166534;' : 'background: #f1f5f9; color: #475569;'}">${req}</span>`;
+                        }).join('')}
+                    </div>
+                </div>
+                
+                <button style="width: 100%; padding: 12px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    📤 Postuler maintenant
+                </button>
+            </div>
+        `).join('')}
+    `;
+    
+    document.getElementById('recommendations-content').innerHTML = html;
+}
+
+function calculateCompatibility(jobRequirements) {
+    if (userProfile.skills.length === 0) return 0;
+    
+    const matches = jobRequirements.filter(req => 
+        userProfile.skills.some(skill => 
+            skill.toLowerCase().includes(req.toLowerCase()) || 
+            req.toLowerCase().includes(skill.toLowerCase())
+        )
+    );
+    
+    let score = (matches.length / jobRequirements.length) * 100;
+    
+    // Bonus localisation
+    if (userProfile.location && userProfile.location !== 'Cotonou') {
+        score += 5;
+    }
+    
+    // Bonus expérience
+    if (userProfile.experience === '5-10' || userProfile.experience === '10+') {
+        score += 10;
+    }
+    
+    return Math.min(100, Math.round(score));
+}
+
+// ASSISTANT CV
+function analyzeCv() {
+    const analysis = {
+        score: Math.floor(Math.random() * 20) + 75, // Score entre 75-95
+        strengths: [
+            "Profil bien structuré et complet",
+            "Compétences techniques solides",
+            "Expérience pertinente pour le secteur public",
+            "Présentation claire et professionnelle"
+        ],
+        suggestions: [
+            "Ajoutez des mots-clés spécifiques au secteur public béninois",
+            "Mentionnez votre connaissance des procédures administratives",
+            "Incluez vos certifications ou formations continues",
+            "Précisez vos compétences linguistiques (français, langues locales)",
+            "Ajoutez des références de professionnels basés au Bénin",
+            "Mettez en avant votre engagement communautaire"
+        ],
+        beninTips: [
+            "Mentionnez votre connaissance des enjeux de développement du Bénin",
+            "Incluez vos compétences en langues locales (Fon, Yoruba, Dendi, etc.)",
+            "Précisez votre familiarité avec l'administration publique béninoise",
+            "Ajoutez vos activités bénévoles ou associatives locales"
+        ]
+    };
+    
+    const html = `
+        <div style="margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 18px;">📊 Score Global de votre CV</h4>
+                <div style="font-size: 36px; font-weight: bold; margin-bottom: 10px;">${analysis.score}/100</div>
+                <div style="background: rgba(255,255,255,0.2); border-radius: 10px; height: 10px; position: relative; overflow: hidden;">
+                    <div style="background: ${analysis.score >= 85 ? '#10b981' : analysis.score >= 70 ? '#f59e0b' : '#ef4444'}; height: 100%; width: ${analysis.score}%; transition: width 1s ease;"></div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px;">
+                    <h5 style="margin: 0 0 15px 0; color: #166534; display: flex; align-items: center; gap: 8px;">
+                        ✅ Points Forts
+                    </h5>
+                    <ul style="margin: 0; padding-left: 20px; color: #166534;">
+                        ${analysis.strengths.map(strength => `<li style="margin-bottom: 8px;">${strength}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div style="background: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 20px;">
+                    <h5 style="margin: 0 0 15px 0; color: #c2410c; display: flex; align-items: center; gap: 8px;">
+                        💡 Suggestions d'Amélioration
+                    </h5>
+                    <ul style="margin: 0; padding-left: 20px; color: #c2410c;">
+                        ${analysis.suggestions.slice(0, 4).map(suggestion => `<li style="margin-bottom: 8px;">${suggestion}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 20px;">
+                <h5 style="margin: 0 0 15px 0; color: #475569; display: flex; align-items: center; gap: 8px;">
+                    🇧🇯 Conseils Spécifiques au Bénin
+                </h5>
+                <ul style="margin: 0; padding-left: 20px; color: #475569;">
+                    ${analysis.beninTips.map(tip => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="analyzeCv()" style="padding: 12px 24px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">
+                    🔄 Nouvelle analyse
+                </button>
+                <button onclick="downloadCvTips()" style="padding: 12px 24px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    📥 Télécharger les conseils
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('cv-analysis-result').innerHTML = html;
+    document.getElementById('cv-analysis-result').style.display = 'block';
+    
+    showNotification('✅ Analyse CV terminée !', 'success');
+}
+
+function downloadCvTips() {
+    showNotification('📥 Fonction de téléchargement en développement !', 'info');
+}
+
+// CHAT (fonction existante)
 function sendHomeMessage() {
     const input = document.getElementById('home-chat-input');
     const chatBox = document.getElementById('home-chat-box');
@@ -396,72 +1230,73 @@ function sendHomeMessage() {
     
     setTimeout(() => {
         const response = getSmartResponse(message);
-        chatBox.innerHTML += `<div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><strong style="color: #1e40af;">Assistant :</strong> ${response}</div>`;
+        chatBox.innerHTML += `<div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"><strong style="color: #1e40af;">Assistant :</strong> ${response}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
     }, 1000);
     
     input.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function getSmartResponse(message) {
     const lower = message.toLowerCase();
     
-    // Salutations
-    if (lower.includes('bonjour') || lower.includes('salut') || lower.includes('hello')) {
-        return "👋 Bonjour ! Je suis votre assistant IA spécialisé dans l'emploi public au Bénin. Comment puis-je vous aider aujourd'hui ?";
+    if (lower.includes('délai') || lower.includes('concours')) {
+        return "Les délais de concours varient selon l'organisme :<br>• Ministères : 15-30 jours<br>• OB : 21 jours<br>• Autres : 14-45 jours<br><br>Je recommande de postuler dans les 7 premiers jours.";
+    } else if (lower.includes('salaire') || lower.includes('grille')) {
+        return "Grilles salariales du secteur public béninois :<br>• Catégorie A : 80,000 - 300,000 FCFA<br>• Catégorie B : 60,000 - 150,000 FCFA<br>• Catégorie C : 45,000 - 100,000 FCFA";
+    } else if (lower.includes('procédure') || lower.includes('candidature')) {
+        return "Procédures de candidature :<br>1. Vérifiez votre éligibilité<br>2. Constituez votre dossier complet<br>3. Déposez avant la date limite<br>4. Passez les épreuves écrites puis orales<br>5. Attendez les résultats";
+    } else if (lower.includes('bonjour') || lower.includes('salut')) {
+        return "Bonjour ! Je suis votre assistant IA pour l'emploi au Bénin. Je peux vous aider avec les procédures, délais et critères des concours. Que souhaitez-vous savoir ?";
+    } else {
+        return "Je peux vous aider avec :<br>• Les procédures de candidature<br>• Les délais et dates limites<br>• Les critères d'éligibilité<br>• Les grilles salariales<br>• Les étapes des concours<br><br>Que souhaitez-vous savoir ?";
     }
-    
-    // Qui es-tu / Présentation
-    if (lower.includes('qui es') || lower.includes('qui êtes') || lower.includes('présente')) {
-        return "🤖 Je suis l'Assistant IA de Licher_Markt ! Je vous aide à naviguer dans le monde de l'emploi public béninois. Je connais les procédures, délais, salaires et critères des concours.";
-    }
-    
-    // Comment postuler / Procédures
-    if (lower.includes('comment postuler') || lower.includes('procédure') || lower.includes('candidature') || lower.includes('postuler')) {
-        return "📋 <strong>Procédures de candidature :</strong><br>1️⃣ Vérifiez les critères d'éligibilité<br>2️⃣ Préparez vos documents (CV, diplômes, certificats)<br>3️⃣ Déposez votre dossier avant la date limite<br>4️⃣ Passez les épreuves écrites puis orales<br>5️⃣ Attendez les résultats<br><br>💡 <em>Conseil : Postulez dès les premiers jours !</em>";
-    }
-    
-    // Délais
-    if (lower.includes('délai') || lower.includes('temps') || lower.includes('combien de jours')) {
-        return "🕒 <strong>Délais de candidature :</strong><br>• <strong>Ministères :</strong> 15-30 jours après publication<br>• <strong>Office du Baccalauréat :</strong> 21 jours<br>• <strong>Autres organismes :</strong> 14-45 jours<br><br>⚡ <em>Recommandation : Postulez dans les 7 premiers jours pour maximiser vos chances !</em>";
-    }
-    
-    // Salaires
-    if (lower.includes('salaire') || lower.includes('grille') || lower.includes('combien') || lower.includes('rémunération') || lower.includes('paye')) {
-        return "💰 <strong>Grilles salariales secteur public béninois :</strong><br>• <strong>Catégorie A :</strong> 80,000 - 300,000 FCFA<br>• <strong>Catégorie B :</strong> 60,000 - 150,000 FCFA<br>• <strong>Catégorie C :</strong> 45,000 - 100,000 FCFA<br><br>📈 <em>Note : Les montants varient selon l'expérience et les primes.</em>";
-    }
-    
-    // Critères / Conditions
-    if (lower.includes('critère') || lower.includes('condition') || lower.includes('exigence') || lower.includes('requis')) {
-        return "📋 <strong>Critères généraux :</strong><br>• Nationalité béninoise<br>• Âge : généralement 18-35 ans<br>• Diplôme requis selon le poste<br>• Casier judiciaire vierge<br>• Aptitude physique<br><br>🎯 <em>Chaque concours a ses critères spécifiques !</em>";
-    }
-    
-    // Concours
-    if (lower.includes('concours') || lower.includes('épreuve') || lower.includes('examen')) {
-        return "📚 <strong>Déroulement des concours :</strong><br>• <strong>Épreuves écrites :</strong> Culture générale, français, matières spécialisées<br>• <strong>Épreuves orales :</strong> Entretien, présentation<br>• <strong>Durée :</strong> 2-6 mois selon l'organisme<br><br>💪 <em>Préparez-vous bien à l'avance !</em>";
-    }
-    
-    // Aide / Assistance
-    if (lower.includes('aide') || lower.includes('aidez') || lower.includes('aider') || lower.includes('assistance')) {
-        return "🆘 <strong>Je peux vous aider avec :</strong><br>• Les procédures de candidature<br>• Les délais et dates limites<br>• Les grilles salariales<br>• Les critères d'éligibilité<br>• Le déroulement des concours<br>• Les conseils de préparation<br><br>❓ <em>Posez-moi une question spécifique !</em>";
-    }
-    
-    // Merci
-    if (lower.includes('merci') || lower.includes('remercie')) {
-        return "😊 De rien ! C'est un plaisir de vous aider. N'hésitez pas si vous avez d'autres questions sur l'emploi public au Bénin !";
-    }
-    
-    // Au revoir
-    if (lower.includes('au revoir') || lower.includes('bye') || lower.includes('à bientôt')) {
-        return "👋 Au revoir ! Bonne chance dans vos démarches professionnelles. Revenez quand vous voulez !";
-    }
-    
-    // Réponse par défaut plus intelligente
-    return "🤔 Je n'ai pas bien compris votre question. Je peux vous renseigner sur :<br><br>• <strong>Procédures</strong> de candidature<br>• <strong>Délais</strong> de concours<br>• <strong>Grilles salariales</strong><br>• <strong>Critères</strong> d'éligibilité<br>• <strong>Concours</strong> et épreuves<br><br>💡 <em>Essayez de reformuler votre question !</em>";
 }
+
+// Notifications
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 1000001;
+        max-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        ${type === 'success' ? 'background: #10b981;' : 
+          type === 'error' ? 'background: #ef4444;' : 
+          'background: #3b82f6;'}
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Event listeners
+document.getElementById('skill-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        addSkill();
+    }
+});
+
 document.getElementById('home-chat-input').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         sendHomeMessage();
     }
 });
-</script>
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    loadProfile();
+});
